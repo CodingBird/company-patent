@@ -16,7 +16,7 @@ module.exports = (appInfo) => {
       dialect: 'mysql',
       connection: {
         // host
-        host: 'localhost',
+        host: '47.92.27.38',
         // port
         port: '3306',
         // username
