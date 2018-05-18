@@ -4,8 +4,9 @@ const Controller = require('./base');
 
 class CompanyController extends Controller {
   async list() {
-    let list = await this.service.company.queryPage();
-    this.ok(list);
+    let param = this.getParams();
+    let result = await this.service.company.queryPage(param);
+    this.ok(result);
   }
 
   async detail() {
