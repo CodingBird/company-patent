@@ -163,9 +163,18 @@ class CompanyService extends Service {
       }
     };
     let list = await this.app
-      .knex('t_company_base_info')
+      .knex({ cb: 't_company_base_info' })
+      .leftJoin({ cp: 't_company_year_patent' }, function() {
+        this.on('cb.code', '=', 'cp.company_code').andOn('cp.year', '=', 2016);
+      })
+      .leftJoin({ ps: 't_company_intellectual_property_state' }, 'cb.code', 'ps.company_code')
       .where(where)
-      .select();
+      .select(
+        'cb.*',
+        'cp.invention_patent_owning_count',
+        'cp.registed_trademark_count',
+        'ps.copyright_registration_count'
+      );
 
     let total = await this.app
       .knex('t_company_base_info')
