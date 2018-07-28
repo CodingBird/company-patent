@@ -9,6 +9,12 @@ class CompanyController extends Controller {
     this.ok(result);
   }
 
+  async queryYearPatent() {
+    let { companyCode } = this.getParams();
+    let result = await this.service.company.queryYearPatent(companyCode);
+    this.ok(result);
+  }
+
   async detail() {
     let { companyCode } = this.getParams();
     let detail = await this.service.company.queryDetail(companyCode);

@@ -16,40 +16,53 @@ class CompanyService extends Service {
       productName,
       copyright_registration_count_max,
       copyright_registration_count_min,
+      copyright_registration_count_bool,
 
       invention_patent_apply_count_max,
       invention_patent_apply_count_min,
+      invention_patent_apply_count_bool,
 
       invention_patent_authorize_count_max,
       invention_patent_authorize_count_min,
+      invention_patent_authorize_count_bool,
 
       invention_patent_owning_count_max,
       invention_patent_owning_count_min,
+      invention_patent_owning_count_bool,
 
       practical_new_apply_count_max,
       practical_new_apply_count_min,
+      practical_new_apply_count_bool,
 
       practical_new_authorize_count_max,
       practical_new_authorize_count_min,
+      practical_new_authorize_count_bool,
 
       practical_new_owning_count_max,
       practical_new_owning_count_min,
+      practical_new_owning_count_bool,
 
       appearance_design_apply_count_max,
       appearance_design_apply_count_min,
+      appearance_design_apply_count_bool,
 
       appearance_design_authorize_count_max,
       appearance_design_authorize_count_min,
+      appearance_design_authorize_count_bool,
 
       appearance_design_owning_count_max,
       appearance_design_owning_count_min,
+      appearance_design_owning_count_bool,
 
       pct_patent_apply_count_max,
       pct_patent_apply_count_min,
+      pct_patent_apply_count_bool,
 
       registed_trademark_count_max,
-      registed_trademark_count_min
+      registed_trademark_count_min,
+      registed_trademark_count_bool
     } = params;
+
     let codeArr1;
     if (productName) {
       codeArr1 = await this.findCodeByProductName(productName);
@@ -84,7 +97,7 @@ class CompanyService extends Service {
     }
 
     let codeArr7;
-    if (practical_new_authorize_count_max || practical_new_apply_count_min) {
+    if (practical_new_authorize_count_max || practical_new_authorize_count_min) {
       codeArr7 = await this.findCodeByPracticalNewAuthorizeCount(params);
     }
 
@@ -125,41 +138,88 @@ class CompanyService extends Service {
       if (codeArr1) {
         qb.whereIn('code', codeArr1);
       }
+    };
+
+    let andWhere = (qb) => {
       if (codeArr2) {
         qb.whereIn('code', codeArr2);
       }
       if (codeArr3) {
-        qb.whereIn('code', codeArr3);
+        if (invention_patent_apply_count_bool === 'and') {
+          qb.whereIn('code', codeArr3);
+        } else {
+          qb.orWhereIn('code', codeArr3);
+        }
       }
       if (codeArr4) {
-        qb.whereIn('code', codeArr4);
+        if (invention_patent_authorize_count_bool === 'and') {
+          qb.whereIn('code', codeArr4);
+        } else {
+          qb.orWhereIn('code', codeArr4);
+        }
       }
       if (codeArr5) {
-        qb.whereIn('code', codeArr5);
+        if (invention_patent_owning_count_bool === 'and') {
+          qb.whereIn('code', codeArr5);
+        } else {
+          qb.orWhereIn('code', codeArr5);
+        }
       }
       if (codeArr6) {
-        qb.whereIn('code', codeArr6);
+        if (practical_new_apply_count_bool === 'and') {
+          qb.whereIn('code', codeArr6);
+        } else {
+          qb.orWhereIn('code', codeArr6);
+        }
       }
       if (codeArr7) {
-        qb.whereIn('code', codeArr7);
+        if (practical_new_authorize_count_bool === 'and') {
+          qb.whereIn('code', codeArr7);
+        } else {
+          qb.orWhereIn('code', codeArr7);
+        }
       }
       if (codeArr8) {
-        qb.whereIn('code', codeArr8);
+        if (appearance_design_apply_count_bool === 'and') {
+          qb.whereIn('code', codeArr8);
+        } else {
+          qb.orWhereIn('code', codeArr8);
+        }
       }
       if (codeArr9) {
-        qb.whereIn('code', codeArr9);
+        if (appearance_design_authorize_count_bool === 'and') {
+          qb.whereIn('code', codeArr9);
+        } else {
+          qb.orWhereIn('code', codeArr9);
+        }
       }
       if (codeArr10) {
-        qb.whereIn('code', codeArr10);
+        if (appearance_design_owning_count_bool === 'and') {
+          qb.whereIn('code', codeArr10);
+        } else {
+          qb.orWhereIn('code', codeArr10);
+        }
       }
       if (codeArr11) {
-        qb.whereIn('code', codeArr11);
+        if (pct_patent_apply_count_bool === 'and') {
+          qb.whereIn('code', codeArr11);
+        } else {
+          qb.orWhereIn('code', codeArr11);
+        }
       }
       if (codeArr12) {
-        qb.whereIn('code', codeArr12);
+        if (registed_trademark_count_bool === 'and') {
+          qb.whereIn('code', codeArr12);
+        } else {
+          qb.orWhereIn('code', codeArr12);
+        }
       }
       if (codeArr13) {
-        qb.whereIn('code', codeArr13);
+        if (practical_new_owning_count_bool === 'and') {
+          qb.whereIn('code', codeArr13);
+        } else {
+          qb.orWhereIn('code', codeArr13);
+        }
       }
     };
     let list = await this.app
@@ -169,6 +229,7 @@ class CompanyService extends Service {
       })
       .leftJoin({ ps: 't_company_intellectual_property_state' }, 'cb.code', 'ps.company_code')
       .where(where)
+      .andWhere(andWhere)
       .select(
         'cb.*',
         'cp.invention_patent_owning_count',
@@ -180,6 +241,7 @@ class CompanyService extends Service {
       .knex('t_company_base_info')
       .count('id as total')
       .where(where)
+      .andWhere(andWhere)
       .first();
     return {
       list,
@@ -483,6 +545,14 @@ class CompanyService extends Service {
       yearPatentList,
       patentSate
     };
+  }
+
+  async queryYearPatent(companyCode) {
+    return this.app
+      .knex('t_company_year_patent')
+      .where({ company_code: companyCode })
+      .select()
+      .orderBy('year');
   }
 }
 
