@@ -47,5 +47,15 @@ class BaseController extends Controller {
   checkNull(...paras) {
     return paras.some((p) => !p || p === 'null' || p === 'undefined');
   }
+
+  exportCsv(fileName, fields, list) {
+    const json2csvParser = require('json2csv').Parser;
+
+    const json2 = new json2csvParser({ fields });
+    const data = json2.parse(list);
+    this.ctx.response.attachment(`${fileName}.csv`);
+    this.ctx.response.set('Content-Type', 'text/html;charset=utf-8');
+    this.ctx.body = data;
+  }
 }
 module.exports = BaseController;

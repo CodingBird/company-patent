@@ -9,7 +9,7 @@ class IndustryService extends Service {
     const offset = (pageNo - 1) * pageSize;
     const where = (qb) => {
       if (industryName) {
-        qb.where('name', 'like',`%${industryName}%`);
+        qb.where('name', 'like', `%${industryName}%`);
       }
       if (idStr) {
         const idArr = idStr.split('#');
@@ -36,6 +36,10 @@ class IndustryService extends Service {
         ...total
       }
     };
+  }
+
+  async queryList() {
+    return this.app.knex('t_industry').select();
   }
 
   async queryDetail(id) {

@@ -554,6 +554,41 @@ class CompanyService extends Service {
       .select()
       .orderBy('year');
   }
+
+  async queryAllBaseInfo() {
+    return this.app
+      .knex({ c: 't_company_base_info' })
+      .leftJoin({ cips: 't_company_intellectual_property_state' }, 'c.code', 'cips.company_code')
+      .select('*')
+      .orderBy('c.code');
+  }
+
+  async queryAllProducts() {
+    return this.app
+      .knex({ c: 't_company_base_info' })
+      .leftJoin({ cp: 't_company_product' }, 'c.code', 'cp.company_code')
+      .whereNotNull('cp.id')
+      .select('cp.*', 'c.name')
+      .orderBy('c.code');
+  }
+
+  async queryAllYearBus() {
+    return this.app
+      .knex({ c: 't_company_base_info' })
+      .leftJoin({ cp: 't_company_year_operation_state' }, 'c.code', 'cp.company_code')
+      .whereNotNull('cp.id')
+      .select('cp.*', 'c.name')
+      .orderBy('c.code');
+  }
+
+  async queryAllYearPatent() {
+    return this.app
+      .knex({ c: 't_company_base_info' })
+      .leftJoin({ cp: 't_company_year_patent' }, 'c.code', 'cp.company_code')
+      .whereNotNull('cp.id')
+      .select('cp.*', 'c.name')
+      .orderBy('c.code');
+  }
 }
 
 module.exports = CompanyService;
